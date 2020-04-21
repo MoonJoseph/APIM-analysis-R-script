@@ -1,3 +1,8 @@
+#This script is writen by muen zhao ,for his data analysis.
+#The Actor-Partner Interdependence Model(APIM) use the predictors of both actor and partner to predict the performance of actor and partner.
+#APIM model ususally could be designed under mutilevel model fremaework. Here I use nlme package of R to do APIM analysis
+#Structure of dataset is very important! I provide a data demo called "APIM.xlsx", but it's only a frake data and aim to facilate people who want to learn this model.
+
 #--------------import data(I have do data preprocessing with matlab)------------
 rm(list = ls())
 library("readxl")
@@ -67,7 +72,7 @@ APIM_P_gls_low <-gls(anP ~ heAc*Low_ENAc + hePc*Low_ENAc ,
                      na.action = na.omit)
 coef(summary(APIM_P_gls_low))
 
-
+#----------------------------------------------plot------------------------------------------
 #step5:you could plot pictures 
 nd1 <- APIM_data %>%
   summarise(heAc=sd(heAc),hePc=0,ENAc=sd(ENAc))
