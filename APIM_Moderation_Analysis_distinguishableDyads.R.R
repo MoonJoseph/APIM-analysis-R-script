@@ -13,6 +13,9 @@ library(tidyr)
 library(dplyr)
 library(nlme)
 APIM_data <- read_xlsx("C:/agingproject/dataanalysisi/study1/APIM.xlsx")
+APIM_data <- APIM_data %>%
+  arrange(couple_id) %>%
+  mutate(gender_A=ifelse(genderA==1,"hus","wife"),gender_A=as.factor(gender_A))
 
 #center moderator and predictor
 APIM_data <- APIM_data %>% 
