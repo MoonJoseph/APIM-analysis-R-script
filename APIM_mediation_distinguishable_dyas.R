@@ -86,3 +86,37 @@ b <- coef(summary(APIM_model_stp3))[7,1]#path of ENA to anA(husband)
 b_se <- coef(summary(APIM_model_stp3))[7,2]#standard error of ENA to anA (husband)
 
 sobel(a,b,a_se,b_se)
+
+# caculate 95% CI using bootstrap
+CI <- function(data,m){     #m is bootstraps times
+  N <- dim(data)[1]         #get the length of data matrixs
+  ab <- rep(0,m)
+  confidence <- 95
+  for(i in 1:m) {
+    sample_new <-sample_n(data,N,replace = TRUE) # randomly resample data
+    APIM_model_stp2_new <-  gls(ENA ~ gender_A + heA:gender_A + heP:gender_A -1,
+                                data = sample_new,
+                                correlation = corCompSymm(form=~1|couple_id), 
+                                weights = varIdent(form=~1|genderA), 
+                                na.action = na.omit)
+    APIM_model_stp3_new <- gls(ENA ~ gender_A + heA:gender_A + heP:gender_A 
+                           + ENA:gender_A - 1,
+                           data = sample_new,
+                           correlation = corCompSymm(form=~1|couple_id), 
+                           weights = varIdent(form=~1|genderA), 
+                           na.action = na.omit)
+    a <- coef(summary(APIM_model_stp2_new))[3,1]  #predictor value of a,path of heA to ENA (husband)
+    b <- coef(summary(APIM_model_stp3_new))[7,1]  #predictor value of b,path of heA to ENA (husband)
+    ab[i] <- a*b
+  }
+  low <- (1-confidence/100)/2                     #2.5%
+  upp <-((1-confidence/100)/2) +(confidence/100)  #97.5%
+  
+  low_lim <-quantile(ab,low)
+  upp_lim <-quantile(ab,upp)
+  low_lim <- format(low_lim,digits = 3)
+  upp_lim <- format(upp_lim,digits = 3)
+  
+  return(data.frame(Lower=low_lim,Upper=upp_lim))
+}
+CI(APIM_data,1000)
