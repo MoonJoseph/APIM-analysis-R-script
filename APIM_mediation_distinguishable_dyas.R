@@ -75,8 +75,8 @@ coef(summary(APIM_model_stp3))
 #                      test indriect effect
 #-------------------------------------------------------------------------
 sobel <- function(a,b,se_A,se_B){
-  ab <- a*b
-  ab_se <- sqrt(a^2*se_B^2+b^2*se_A^2)
+  ab <- a*b         #a b is predictor value, se_A se_B is standard error of two predictor value
+  ab_se <- sqrt(a^2*se_B^2+b^2*se_A^2) 
   z <- ab/ab_se
   p <- 2*pnorm(z,lower.tail = FALSE)
   return(data.frame(indirect_effect=ab,z_value=z,p_value=p))}
