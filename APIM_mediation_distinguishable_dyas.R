@@ -10,6 +10,7 @@
 #Here is distinguishable data and same,I treat it as distinguishable,and distinguishable variable is gender
 #------------------------------------------------------------------------------------
 #Introduction
+#part1 caculate mediator effect
 #step1:estimate four total effects ,which are :
 #(1).Wife Actor Effect from healthy (Wife) to an (Wife)
 #(2).Husband Actor Effect from healthy(Husband) to an (Husband)
@@ -27,8 +28,8 @@
 #(4).from healthy(Husband) to an (Husband)
 #(5).from healthy(Husband) to an (Wife)
 #(6).from healthy (Wife) to an (Husband)
+#part2 caculate indriect effect
 #if ENA:gender_A is significant that means mediation effect is significant
-#
 #---------------------------------------------------------------------------------
 rm(list = ls())
 #import data
@@ -71,4 +72,17 @@ coef(summary(APIM_model_stp3))
 #"gender_Ahus:heA" and "gender_Awife:heA" is (4),(3)
 #"gender_Ahus:heP" and "gender_Awife:heP" is(5),(6)   [see introduction of step3]
 #------------------------------------------------------------------------
+#                      test indriect effect
+#-------------------------------------------------------------------------
+sobel <- function(a,b,se_A,se_B){
+  ab <- a*b
+  ab_se <- sqrt(a^2*se_B^2+b^2*se_A^2)
+  z <- ab/ab_se
+  p <- 2*pnorm(z,lower.tail = FALSE)
+  return(data.frame(indirect_effect=ab,z_value=z,p_value=p))}
+a <- coef(summary(APIM_model_stp2))[3,1] #path of heA to ENA (husband)
+a_se <- coef(summary(APIM_model_stp2))[3,2]#standard error of heA to ENA (husband)
+b <- coef(summary(APIM_model_stp3))[7,1]#path of ENA to anA(husband)
+b_se <- coef(summary(APIM_model_stp3))[7,2]#standard error of ENA to anA (husband)
 
+sobel(a,b,a_se,b_se)
